@@ -1,0 +1,11 @@
+daisee_dataset_max30.npz
+saved_lrcn_models/boredom_best.h5
+saved_lrcn_models/boredom_final.h5
+saved_lrcn_models/confusion_best.h5
+saved_lrcn_models/confusion_final.h5
+saved_lrcn_models/engagement_best.h5
+saved_lrcn_models/engagement_final.h5
+saved_lrcn_models/frustration_best.h5
+saved_lrcn_models/frustration_final.h5
+XMax30.npy
+YMax30.npy
