@@ -1,0 +1,108 @@
+import numpy as np
+import os
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras import layers, models
+from tensorflow.keras.callbacks import ModelCheckpoint
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+
+# ==== CONFIG ====
+DATA_DIR = r"C:\Users\Randall Chiang\Documents\FYP\DAiSEE\Data\Train"
+MODEL_DIR = "GRU_precomputed_models"
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+data = np.load("daisee_dataset_max30.npz")
+X, y = data["X"], data["y"]
+
+print("X shape:", X.shape)  # (num_clips, frames, H, W, 3)
+print("y shape:", y.shape)  # (num_clips, 4)
+
+# ==== Convert labels to single-class multiclass problem ====
+y_class = np.argmax(y, axis=1)
+
+# ==== TRAIN/VAL/TEST SPLIT ====
+X_train, X_temp, y_train, y_temp = train_test_split(
+    X, y_class, test_size=0.4, random_state=42
+)
+X_val, X_test, y_val, y_test = train_test_split(
+    X_temp, y_temp, test_size=0.5, random_state=42
+)
+
+# Alternate-frame sampling
+X_train = X_train[:, ::2, :, :, :]
+X_val = X_val[:, ::2, :, :, :]
+X_test = X_test[:, ::2, :, :, :]
+
+# ==== PRECOMPUTE RESNET FEATURES ====
+resnet = ResNet50(weights="imagenet", include_top=False, pooling="avg", input_shape=(64,64,3))
+for layer in resnet.layers:
+    layer.trainable = False
+
+def extract_features(X):
+    num_clips, num_frames, H, W, C = X.shape
+    X_feats = np.zeros((num_clips, num_frames, 2048), dtype=np.float32)
+    for i in tqdm(range(num_clips), desc="Extracting ResNet features"):
+        X_feats[i] = resnet.predict(X[i], batch_size=32, verbose=0)
+    return X_feats
+
+X_train_feats = extract_features(X_train)
+X_val_feats = extract_features(X_val)
+X_test_feats = extract_features(X_test)
+
+np.savez_compressed("daisee_resnet_feats.npz",
+                    X_train=X_train_feats, y_train=y_train,
+                    X_val=X_val_feats, y_val=y_val,
+                    X_test=X_test_feats, y_test=y_test)
+print("Features saved.")
+
+# ==== BUILD GRU MODEL ====
+def build_gru(input_shape, num_classes=4):
+    model = models.Sequential([
+        layers.GRU(256, input_shape=input_shape, return_sequences=False),
+        layers.Dropout(0.5),
+        layers.Dense(num_classes, activation="softmax")
+    ])
+    model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+    return model
+
+model = build_gru(X_train_feats.shape[1:], num_classes=4)
+
+# ==== TRAINING ====
+checkpoint_path = os.path.join(MODEL_DIR, "gru_best_multiclass.h5")
+checkpoint = ModelCheckpoint(checkpoint_path, save_best_only=True, monitor="val_accuracy", mode="max")
+
+history = model.fit(
+    X_train_feats, y_train,
+    validation_data=(X_val_feats, y_val),
+    epochs=20,
+    batch_size=8,
+    callbacks=[checkpoint],
+    verbose=1
+)
+
+# Load best model
+best_model = models.load_model(checkpoint_path)
+
+# Overall test accuracy
+test_loss, test_acc = best_model.evaluate(X_test_feats, y_test, verbose=0)
+print(f"\nOverall test accuracy: {test_acc:.4f}")
+
+# ==== PER-EMOTION ACCURACY ====
+emotion_labels = ["Boredom", "Engagement", "Confusion", "Frustration"]
+y_pred = np.argmax(best_model.predict(X_test_feats), axis=1)
+
+results = {}
+for i, emotion in enumerate(emotion_labels):
+    idx = np.where(y_test == i)[0]
+    acc = accuracy_score(y_test[idx], y_pred[idx])
+    results[emotion] = acc
+    print(f"{emotion} accuracy: {acc:.4f}")
+
+# Plot results
+plt.bar(results.keys(), results.values())
+plt.ylabel("Accuracy")
+plt.title("GRU with Precomputed ResNet Features (per emotion)")
+plt.ylim(0, 1.0)
+plt.show()
