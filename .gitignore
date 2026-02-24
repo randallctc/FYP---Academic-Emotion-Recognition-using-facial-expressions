@@ -9,5 +9,21 @@ saved_lrcn_models/frustration_best.h5
 saved_lrcn_models/frustration_final.h5
 XMax30.npy
 YMax30.npy
-.env
+
+# Virtual environments
 .env/
+venv/
+AppEnv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Large ML files
+*.h5
+*.npy
+*.npz
+
+# OS
+.DS_Store
+Thumbs.db
