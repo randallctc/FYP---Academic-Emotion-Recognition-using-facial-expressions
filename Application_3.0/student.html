@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student - Classroom Emotion Monitor</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        p {
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .video-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 3px solid #ecf0f1;
+        }
+        .status {
+            text-align: center;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .hidden { display: none; }
+        
+        .emotion-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .emotion-display h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .emotion-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="joinForm">
+            <h1>🎓 Join Classroom</h1>
+            <p>Enter your name to join the emotion monitoring session</p>
+            
+            <div class="form-group">
+                <label for="studentName">Your Name</label>
+                <input type="text" id="studentName" placeholder="e.g., John Smith" autofocus>
+            </div>
+            
+            <button class="btn btn-primary" onclick="joinClass()">
+                Join Class
+            </button>
+        </div>
+        
+        <div id="sessionView" class="hidden">
+            <h1>✅ Connected to Class</h1>
+            <p>Your emotions are being monitored</p>
+            
+            <div class="video-container">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+            
+            <div class="emotion-display">
+                <h3>Your Current Emotion</h3>
+                <div id="currentEmotion" style="font-size: 24px; color: #95a5a6;">
+                    Analyzing...
+                </div>
+            </div>
+            
+            <div class="status status-connected">
+                <strong id="studentNameDisplay"></strong> - Connected
+            </div>
+            
+            <button class="btn btn-danger" onclick="leaveClass()" style="margin-top: 20px;">
+                Leave Class
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let studentId = null;
+        let studentName = null;
+        let stream = null;
+        let video = null;
+        let canvas = null;
+        let ctx = null;
+        let captureInterval = null;
+        
+        function generateId() {
+            return 'student_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        async function joinClass() {
+            const nameInput = document.getElementById('studentName');
+            studentName = nameInput.value.trim();
+            
+            if (!studentName) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            studentId = generateId();
+            
+            // Get webcam access
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                
+                video = document.getElementById('video');
+                canvas = document.getElementById('canvas');
+                ctx = canvas.getContext('2d');
+                
+                video.srcObject = stream;
+                
+                canvas.width = 640;
+                canvas.height = 480;
+                
+                // Notify server
+                socket.emit('student_join', {
+                    student_id: studentId,
+                    student_name: studentName
+                });
+                
+                // Show session view
+                document.getElementById('joinForm').classList.add('hidden');
+                document.getElementById('sessionView').classList.remove('hidden');
+                document.getElementById('studentNameDisplay').textContent = studentName;
+                
+                // Start sending frames
+                captureInterval = setInterval(captureAndSend, 2000);
+                
+            } catch (err) {
+                alert('Could not access webcam: ' + err.message);
+            }
+        }
+        
+        function captureAndSend() {
+            if (!video || !canvas || !ctx) return;
+            
+            // Draw video frame to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert to base64
+            const frameData = canvas.toDataURL('image/jpeg', 0.7);
+            
+            // Send to server
+            socket.emit('student_frame', {
+                student_id: studentId,
+                student_name: studentName,
+                frame: frameData
+            });
+        }
+        
+        function leaveClass() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            if (captureInterval) {
+                clearInterval(captureInterval);
+            }
+            
+            location.reload();
+        }
+        
+        // Listen for when teacher assigns emotion (optional feature)
+        socket.on('emotion_update', (data) => {
+            if (data.student_id === studentId) {
+                const emotionDiv = document.getElementById('currentEmotion');
+                emotionDiv.textContent = `${data.emotion} (${(data.confidence * 100).toFixed(0)}%)`;
+                emotionDiv.className = 'emotion-badge color-' + data.emotion.toLowerCase();
+            }
+        });
+    </script>
+</body>
+</html>
