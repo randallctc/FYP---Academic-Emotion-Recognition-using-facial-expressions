@@ -11,9 +11,10 @@ XMax30.npy
 YMax30.npy
 
 # Virtual environments
+.env
+.env/
 .env/
 venv/
-AppEnv/
 
 # Python
 __pycache__/
