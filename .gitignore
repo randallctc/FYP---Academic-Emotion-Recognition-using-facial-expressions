@@ -9,3 +9,5 @@ saved_lrcn_models/frustration_best.h5
 saved_lrcn_models/frustration_final.h5
 XMax30.npy
 YMax30.npy
+.env
+.env/
