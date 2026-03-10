@@ -1,0 +1,60 @@
+{
+  "room_code": "897892",
+  "session_id": "20260308_160046",
+  "teacher_name": "ASDASD",
+  "start_time": "2026-03-08T16:00:46.302315",
+  "duration": "00:03.459",
+  "total_students": 6,
+  "students": [
+    {
+      "id": "student_1772956525991_ne3wygedy",
+      "name": "Randall",
+      "connected": true,
+      "join_time": "2026-03-08T15:55:28.148417",
+      "emotion": "Confusion",
+      "confidence": 0.5818349123001099
+    },
+    {
+      "id": "student_1772956603037_eveigz5md",
+      "name": "Alice",
+      "connected": true,
+      "join_time": "2026-03-08T15:56:43.094671",
+      "emotion": "Confusion",
+      "confidence": 0.5842218399047852
+    },
+    {
+      "id": "student_1772956672779_5d6k76tr8",
+      "name": "chiang",
+      "connected": true,
+      "join_time": "2026-03-08T15:57:52.892310",
+      "emotion": "Confusion",
+      "confidence": 0.5235170125961304
+    },
+    {
+      "id": "student_1772956721221_v8rqlru5b",
+      "name": "john",
+      "connected": true,
+      "join_time": "2026-03-08T15:58:41.278906",
+      "emotion": "Frustration",
+      "confidence": 0.5732285380363464
+    },
+    {
+      "id": "student_1772956732355_i5fhyijio",
+      "name": "Smit",
+      "connected": true,
+      "join_time": "2026-03-08T15:58:52.413178",
+      "emotion": "Confusion",
+      "confidence": 0.5542689561843872
+    },
+    {
+      "id": "student_1772956763978_9o4qj57st",
+      "name": "Ling",
+      "connected": true,
+      "join_time": "2026-03-08T15:59:24.036711",
+      "emotion": "Confusion",
+      "confidence": 0.5658169984817505
+    }
+  ],
+  "timeline": [],
+  "total_data_points": 0
+}

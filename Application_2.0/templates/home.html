@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Classroom Emotion Monitor - Home</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 60px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .emoji { font-size: 64px; margin-bottom: 20px; }
+        h1 {
+            color: #2c3e50;
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+        p {
+            color: #7f8c8d;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .option-card {
+            background: #f8f9fa;
+            border: 2px solid #ecf0f1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        .option-card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .option-card h2 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .option-card p {
+            color: #95a5a6;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+        .review-link {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+        .review-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .review-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .modal-content h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🎓</div>
+        <h1>Classroom Emotion Monitor</h1>
+        <p>Real-time emotion tracking for better teaching</p>
+        
+        <div class="options">
+            <div class="option-card" onclick="showCreateRoomModal()">
+                <div class="icon">👨‍🏫</div>
+                <h2>Create Room</h2>
+                <p>Start a new session as a teacher</p>
+            </div>
+            
+            <div class="option-card" onclick="showJoinRoomModal()">
+                <div class="icon">👨‍🎓</div>
+                <h2>Join Room</h2>
+                <p>Enter a room code to join as a student</p>
+            </div>
+        </div>
+        
+        <div class="review-link">
+            <a href="/review" target="_blank">📊 Review Past Sessions</a>
+        </div>
+    </div>
+
+    <!-- Create Room Modal -->
+    <div id="createRoomModal" class="modal">
+        <div class="modal-content">
+            <h2>👨‍🏫 Create Room</h2>
+            <div class="form-group">
+                <label for="teacherName">Your Name</label>
+                <input type="text" id="teacherName" placeholder="e.g., Professor Smith" autofocus>
+            </div>
+            <button class="btn btn-primary" onclick="createRoom()">Create Room</button>
+            <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+            <div id="createError" class="error"></div>
+        </div>
+    </div>
+
+    <!-- Join Room Modal -->
+    <div id="joinRoomModal" class="modal">
+        <div class="modal-content">
+            <h2>👨‍🎓 Join Room</h2>
+            <div class="form-group">
+                <label for="roomCode">Room Code</label>
+                <input type="text" id="roomCode" placeholder="6-digit code" maxlength="6" pattern="[0-9]*">
+            </div>
+            <div class="form-group">
+                <label for="studentName">Your Name</label>
+                <input type="text" id="studentName" placeholder="e.g., John Smith">
+            </div>
+            <button class="btn btn-primary" onclick="joinRoom()">Join Room</button>
+            <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+            <div id="joinError" class="error"></div>
+        </div>
+    </div>
+
+    <script>
+        function showCreateRoomModal() {
+            document.getElementById('createRoomModal').classList.add('active');
+            document.getElementById('teacherName').focus();
+        }
+
+        function showJoinRoomModal() {
+            document.getElementById('joinRoomModal').classList.add('active');
+            document.getElementById('roomCode').focus();
+        }
+
+        function closeModals() {
+            document.getElementById('createRoomModal').classList.remove('active');
+            document.getElementById('joinRoomModal').classList.remove('active');
+            document.getElementById('createError').textContent = '';
+            document.getElementById('joinError').textContent = '';
+        }
+
+        async function createRoom() {
+            const teacherName = document.getElementById('teacherName').value.trim();
+            
+            if (!teacherName) {
+                document.getElementById('createError').textContent = 'Please enter your name';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/create_room', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ teacher_name: teacherName })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect to teacher dashboard with room code
+                    window.location.href = `/teacher/${data.room_code}`;
+                } else {
+                    document.getElementById('createError').textContent = data.error || 'Failed to create room';
+                }
+            } catch (error) {
+                document.getElementById('createError').textContent = 'Network error. Please try again.';
+            }
+        }
+
+        async function joinRoom() {
+            const roomCode = document.getElementById('roomCode').value.trim();
+            const studentName = document.getElementById('studentName').value.trim();
+
+            if (!roomCode) {
+                document.getElementById('joinError').textContent = 'Please enter room code';
+                return;
+            }
+
+            if (roomCode.length !== 6 || !/^\d+$/.test(roomCode)) {
+                document.getElementById('joinError').textContent = 'Room code must be 6 digits';
+                return;
+            }
+
+            if (!studentName) {
+                document.getElementById('joinError').textContent = 'Please enter your name';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/verify_room', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ room_code: roomCode })
+                });
+
+                const data = await response.json();
+
+                if (data.valid) {
+                    // Redirect to student page with room code
+                    window.location.href = `/student/${roomCode}?name=${encodeURIComponent(studentName)}`;
+                } else {
+                    document.getElementById('joinError').textContent = 'Invalid room code. Please check and try again.';
+                }
+            } catch (error) {
+                document.getElementById('joinError').textContent = 'Network error. Please try again.';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('teacherName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createRoom();
+        });
+
+        document.getElementById('studentName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') joinRoom();
+        });
+
+        document.getElementById('roomCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (document.getElementById('roomCode').value.trim()) {
+                    document.getElementById('studentName').focus();
+                }
+            }
+        });
+
+        // Only allow numbers in room code
+        document.getElementById('roomCode').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

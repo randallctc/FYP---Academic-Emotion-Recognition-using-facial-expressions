@@ -1,0 +1,195 @@
+{
+  "session_id": "20260226_234034",
+  "start_time": "2026-02-26T23:40:34.541158",
+  "duration": "01:21.584",
+  "total_students": 3,
+  "students": [
+    {
+      "id": "student_1772120439561_snk92tgzi",
+      "name": "randall",
+      "connected": true,
+      "join_time": "2026-02-26T23:40:40.540138",
+      "last_emotion": {
+        "emotion": "Confusion",
+        "confidence": 0.8521976470947266,
+        "all_scores": {
+          "Boredom": 0.08913600444793701,
+          "Confusion": 0.8521976470947266,
+          "Frustration": 0.046117883175611496,
+          "Engagement": 0.12911443412303925
+        }
+      }
+    },
+    {
+      "id": "student_1772120450399_c2x7udvxc",
+      "name": "Alice",
+      "connected": true,
+      "join_time": "2026-02-26T23:40:50.456826",
+      "last_emotion": {
+        "emotion": "Confusion",
+        "confidence": 0.8255075216293335,
+        "all_scores": {
+          "Boredom": 0.10738725960254669,
+          "Confusion": 0.8255075216293335,
+          "Frustration": 0.04183618724346161,
+          "Engagement": 0.1134156733751297
+        }
+      }
+    },
+    {
+      "id": "student_1772120472437_jwvd4m6x7",
+      "name": "john",
+      "connected": true,
+      "join_time": "2026-02-26T23:41:12.493124",
+      "last_emotion": {
+        "emotion": "Confusion",
+        "confidence": 0.8338567018508911,
+        "all_scores": {
+          "Boredom": 0.08573208004236221,
+          "Confusion": 0.8338567018508911,
+          "Frustration": 0.04422920197248459,
+          "Engagement": 0.14118020236492157
+        }
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "00:14.813",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:22.786",
+      "total_students": 2,
+      "emotions": {
+        "Confusion": 2,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:31.268",
+      "total_students": 2,
+      "emotions": {
+        "Confusion": 2,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:37.329",
+      "total_students": 2,
+      "emotions": {
+        "Confusion": 2,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:48.190",
+      "total_students": 3,
+      "emotions": {
+        "Confusion": 3,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:59.418",
+      "total_students": 3,
+      "emotions": {
+        "Confusion": 3,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "01:10.528",
+      "total_students": 3,
+      "emotions": {
+        "Confusion": 3,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "01:21.515",
+      "total_students": 3,
+      "emotions": {
+        "Confusion": 3,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Engagement": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Engagement": 0.0
+      },
+      "alert": "\u26a0\ufe0f High confusion: 100.0% of students"
+    }
+  ],
+  "total_data_points": 8
+}

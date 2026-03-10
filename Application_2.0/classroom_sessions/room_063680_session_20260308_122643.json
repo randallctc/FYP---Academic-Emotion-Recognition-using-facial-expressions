@@ -1,0 +1,181 @@
+{
+  "room_code": "063680",
+  "session_id": "20260308_122643",
+  "teacher_name": "Dr Chiang",
+  "start_time": "2026-03-08T12:26:43.121054",
+  "duration": "00:49.672",
+  "total_students": 2,
+  "students": [
+    {
+      "id": "student_1772943958008_hp2gcxzre",
+      "name": "Alice",
+      "connected": true,
+      "join_time": "2026-03-08T12:25:58.644288",
+      "emotion": "Boredom",
+      "confidence": 0.4912167191505432
+    },
+    {
+      "id": "student_1772944019554_0lx7riwxn",
+      "name": "john",
+      "connected": true,
+      "join_time": "2026-03-08T12:26:59.699308",
+      "emotion": "Confusion",
+      "confidence": 0.5078068375587463
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "00:02.852",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Engagement": 0,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Engagement": 0.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:07.906",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Engagement": 0,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Engagement": 0.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:12.993",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Engagement": 0,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Engagement": 0.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:18.166",
+      "total_students": 2,
+      "emotions": {
+        "Confusion": 1,
+        "Neutral": 1,
+        "Engagement": 0,
+        "Boredom": 0,
+        "Frustration": 0
+      },
+      "percentages": {
+        "Confusion": 50.0,
+        "Neutral": 50.0,
+        "Engagement": 0.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0
+      },
+      "alert": null
+    },
+    {
+      "timestamp": "00:23.139",
+      "total_students": 2,
+      "emotions": {
+        "Boredom": 1,
+        "Neutral": 1,
+        "Engagement": 0,
+        "Confusion": 0,
+        "Frustration": 0
+      },
+      "percentages": {
+        "Boredom": 50.0,
+        "Neutral": 50.0,
+        "Engagement": 0.0,
+        "Confusion": 0.0,
+        "Frustration": 0.0
+      },
+      "alert": null
+    },
+    {
+      "timestamp": "00:31.140",
+      "total_students": 2,
+      "emotions": {
+        "Boredom": 1,
+        "Confusion": 1,
+        "Engagement": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Boredom": 50.0,
+        "Confusion": 50.0,
+        "Engagement": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "Low engagement: only 0.0% engaged"
+    },
+    {
+      "timestamp": "00:39.301",
+      "total_students": 2,
+      "emotions": {
+        "Confusion": 2,
+        "Engagement": 0,
+        "Boredom": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Engagement": 0.0,
+        "Boredom": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:47.501",
+      "total_students": 2,
+      "emotions": {
+        "Boredom": 1,
+        "Confusion": 1,
+        "Engagement": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Boredom": 50.0,
+        "Confusion": 50.0,
+        "Engagement": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "Low engagement: only 0.0% engaged"
+    }
+  ],
+  "total_data_points": 8
+}

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student - Classroom Emotion Monitor</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 { color: #2c3e50; margin-bottom: 10px; text-align: center; }
+        p  { color: #7f8c8d; text-align: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #2c3e50; font-weight: 600; }
+        input {
+            width: 100%; padding: 12px;
+            border: 2px solid #ecf0f1; border-radius: 6px;
+            font-size: 16px; transition: border-color 0.3s;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn {
+            width: 100%; padding: 14px;
+            border: none; border-radius: 6px;
+            font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-danger  { background: #e74c3c; color: white; }
+        .video-container { margin: 20px 0; text-align: center; }
+        video {
+            width: 100%; max-width: 400px;
+            border-radius: 8px; border: 3px solid #ecf0f1;
+        }
+        .emotion-display {
+            text-align: center; margin: 20px 0;
+            padding: 20px; background: #f8f9fa; border-radius: 8px;
+        }
+        .emotion-display h3 { color: #2c3e50; margin-bottom: 10px; }
+        #bufferStatus { color: #95a5a6; margin-bottom: 10px; font-size: 14px; }
+        #currentEmotion { font-size: 24px; font-weight: bold; color: #95a5a6; min-height: 36px; }
+        .status {
+            text-align: center; padding: 12px;
+            border-radius: 6px; margin-top: 20px; font-weight: 600;
+        }
+        .status-connected    { background: #d4edda; color: #155724; }
+        .status-disconnected { background: #f8d7da; color: #721c24; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Join form -->
+    <div id="joinForm">
+        <h1>🎓 Join Classroom</h1>
+        <p>Enter your name to join the emotion monitoring session</p>
+        <div class="form-group">
+            <label for="studentName">Your Name</label>
+            <input type="text" id="studentName" placeholder="e.g., John Smith" autofocus>
+        </div>
+        <button class="btn btn-primary" onclick="joinClass()">Join Class</button>
+    </div>
+
+    <!-- Session view -->
+    <div id="sessionView" class="hidden">
+        <h1>✅ Connected to Class</h1>
+        <p>Room: <strong id="roomCodeText"></strong></p>
+
+        <div class="video-container">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+
+        <div class="emotion-display">
+            <h3>Your Current Emotion</h3>
+            <div id="bufferStatus">Buffer: <span id="bufferCount">0</span>/60 frames</div>
+            <div id="currentEmotion">Waiting for camera...</div>
+        </div>
+
+        <div class="status status-connected">
+            <strong id="studentNameDisplay"></strong> - Connected
+        </div>
+
+        <button class="btn btn-danger" onclick="leaveClass()" style="margin-top:20px;">
+            Leave Class
+        </button>
+    </div>
+
+</div>
+
+<script>
+    // ── State ──────────────────────────────────────────────────────────────────
+    const pathParts = window.location.pathname.split('/');
+    const roomCode  = (pathParts[1] === 'student' && pathParts[2]) ? pathParts[2] : null;
+
+    if (!roomCode) {
+        alert('Invalid room code.');
+        window.location.href = '/';
+    }
+
+    // Pre-fill name from URL if provided
+    const urlParams   = new URLSearchParams(window.location.search);
+    const nameFromUrl = urlParams.get('name');
+    if (nameFromUrl) {
+        document.getElementById('studentName').value = nameFromUrl;
+    }
+
+    let studentId       = null;
+    let studentName     = null;
+    let stream          = null;
+    let captureInterval = null;
+    let hasJoined       = false;
+
+    // Auto-join immediately if name provided via URL
+    window.addEventListener('load', () => {
+        if (nameFromUrl) {
+            setTimeout(joinClass, 300);
+        }
+    });
+
+    const socket = io({
+        reconnection:        true,
+        reconnectionAttempts: 10,
+        reconnectionDelay:   1000,
+    });
+
+    // ── Socket events ──────────────────────────────────────────────────────────
+
+    socket.on('connect', () => {
+        console.log('Connected:', socket.id);
+        // Re-register with server on reconnect
+        if (hasJoined && studentId) {
+            socket.emit('join_room', { room_code: roomCode });
+            socket.emit('student_join', {
+                student_id:   studentId,
+                student_name: studentName,
+                room_code:    roomCode
+            });
+        }
+    });
+
+    socket.on('buffer_update', (data) => {
+        if (data.student_id !== studentId) return;
+        document.getElementById('bufferCount').textContent = data.buffer_size;
+        const bufferEl  = document.getElementById('bufferStatus');
+        const emotionEl = document.getElementById('currentEmotion');
+
+        if (data.buffer_full) {
+            bufferEl.style.color = '#27ae60';
+        } else {
+            bufferEl.style.color = data.face_found ? '#f39c12' : '#e74c3c';
+        }
+
+        if (data.face_found) {
+            // Face is visible — if we're in the initial phase (no confirmed emotion
+            // yet) and a brief no-face flicker locked the status, clear it back.
+            // We check dataset.confirmedEmotion to distinguish initial phase from
+            // post-away re-analyze (which is driven by the server signal only).
+            if (emotionEl.dataset.state === 'no_face' && !emotionEl.dataset.confirmedEmotion) {
+                emotionEl.textContent   = 'Analyzing...';
+                emotionEl.style.color   = '#95a5a6';
+                emotionEl.dataset.state = 'analyzing';
+            }
+            // Initial buffer fill: waiting → analyzing.
+            if (emotionEl.dataset.state === 'waiting') {
+                emotionEl.textContent   = 'Analyzing...';
+                emotionEl.style.color   = '#95a5a6';
+                emotionEl.dataset.state = 'analyzing';
+            }
+        } else {
+            // No face detected — show warning, but don't overwrite analyzing state.
+            // analyzing is set by the server explicitly and a single missed frame
+            // shouldn't stomp over it.
+            if (emotionEl.dataset.state !== 'analyzing') {
+                emotionEl.textContent   = '⚠️ No face detected';
+                emotionEl.style.color   = '#e74c3c';
+                emotionEl.dataset.state = 'no_face';
+            }
+        }
+    });
+
+    socket.on('emotion_update', (data) => {
+        if (data.student_id !== studentId) return;
+        const el = document.getElementById('currentEmotion');
+
+        if (data.status === 'absent') {
+            // Server cleared the emotion because no face was seen for >= ABSENT_SECONDS.
+            el.textContent   = '⚠️ Away from camera';
+            el.style.color   = '#e74c3c';
+            el.dataset.state = 'no_face';
+            return;
+        }
+
+        if (data.status === 'analyzing') {
+            // Face returned after being absent — collecting fresh frames.
+            el.textContent   = 'Analyzing...';
+            el.style.color   = '#95a5a6';
+            el.dataset.state = 'analyzing';
+            return;
+        }
+
+        if (data.status === 'detected') {
+            const emotion    = data.emotion || 'Neutral';
+            const confidence = data.confidence || 0;
+            if (emotion === 'Neutral') {
+                el.textContent   = 'No strong emotion detected';
+                el.style.color   = '#95a5a6';
+            } else {
+                el.textContent   = `${emotion} (${(confidence * 100).toFixed(0)}%)`;
+                el.style.color   = emotionColor(emotion);
+            }
+            el.dataset.state          = 'detected';
+            el.dataset.confirmedEmotion = 'true';  // marks that we've had at least one real prediction
+        }
+    });
+
+    socket.on('teacher_disconnected', () => {
+        alert('Teacher has ended the session.');
+        cleanup();
+        window.location.href = '/';
+    });
+
+    // ── Join / Leave ───────────────────────────────────────────────────────────
+
+    async function joinClass() {
+        const nameInput = document.getElementById('studentName');
+        studentName = nameInput.value.trim();
+        if (!studentName) { alert('Please enter your name'); return; }
+
+        studentId = 'student_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+        } catch (err) {
+            alert('Could not access webcam: ' + err.message);
+            return;
+        }
+
+        const video  = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        video.srcObject = stream;
+        canvas.width    = 640;
+        canvas.height   = 480;
+
+        // Register with server
+        socket.emit('join_room',    { room_code: roomCode });
+        socket.emit('student_join', { student_id: studentId, student_name: studentName, room_code: roomCode });
+
+        // Show session UI
+        document.getElementById('joinForm').classList.add('hidden');
+        document.getElementById('sessionView').classList.remove('hidden');
+        document.getElementById('studentNameDisplay').textContent = studentName;
+        document.getElementById('roomCodeText').textContent       = roomCode;
+
+        const emotionEl = document.getElementById('currentEmotion');
+        emotionEl.textContent   = 'Waiting for camera...';
+        emotionEl.dataset.state = 'waiting';
+
+        hasJoined = true;
+        startCapture(video, canvas);
+    }
+
+    function leaveClass() {
+        socket.emit('student_leave', { student_id: studentId, room_code: roomCode });
+        cleanup();
+        window.location.href = '/';
+    }
+
+    function cleanup() {
+        if (captureInterval) { clearInterval(captureInterval); captureInterval = null; }
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        hasJoined = false;
+    }
+
+    // ── Frame capture ──────────────────────────────────────────────────────────
+
+    function startCapture(video, canvas) {
+        const ctx = canvas.getContext('2d');
+
+        function sendFrame() {
+            if (!stream) return;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = canvas.toDataURL('image/jpeg', 0.7);
+            socket.emit('student_frame', {
+                student_id:   studentId,
+                student_name: studentName,
+                room_code:    roomCode,
+                frame:        frame
+            });
+        }
+
+        captureInterval = setInterval(sendFrame, 80);   // ~12 fps → buffer fills in ~5s
+
+        // Keep sending when tab is hidden (reduces rate but doesn't stop)
+        document.addEventListener('visibilitychange', () => {
+            clearInterval(captureInterval);
+            captureInterval = setInterval(sendFrame, document.hidden ? 500 : 80);
+        });
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+
+    function emotionColor(emotion) {
+        return {
+            'Engagement':  '#27ae60',
+            'Boredom':     '#95a5a6',
+            'Confusion':   '#f39c12',
+            'Frustration': '#e74c3c',
+        }[emotion] || '#95a5a6';
+    }
+
+    // Notify server on tab close
+    window.addEventListener('beforeunload', () => {
+        if (studentId) {
+            socket.emit('student_leave', { student_id: studentId, room_code: roomCode });
+        }
+    });
+</script>
+</body>
+</html>

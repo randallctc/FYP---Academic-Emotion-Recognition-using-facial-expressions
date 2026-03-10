@@ -1,0 +1,69 @@
+{
+  "room_code": "651903",
+  "session_id": "20260308_162338",
+  "teacher_name": "Professor Chiang",
+  "start_time": "2026-03-08T16:23:38.900414",
+  "duration": "08:24.518",
+  "total_students": 0,
+  "students": [],
+  "timeline": [
+    {
+      "timestamp": "00:01.803",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Boredom": 0,
+        "Engagement": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Engagement": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:06.691",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Boredom": 0,
+        "Engagement": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Engagement": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    },
+    {
+      "timestamp": "00:11.507",
+      "total_students": 1,
+      "emotions": {
+        "Confusion": 1,
+        "Boredom": 0,
+        "Engagement": 0,
+        "Frustration": 0,
+        "Neutral": 0
+      },
+      "percentages": {
+        "Confusion": 100.0,
+        "Boredom": 0.0,
+        "Engagement": 0.0,
+        "Frustration": 0.0,
+        "Neutral": 0.0
+      },
+      "alert": "High confusion: 100.0% of students"
+    }
+  ],
+  "total_data_points": 3
+}

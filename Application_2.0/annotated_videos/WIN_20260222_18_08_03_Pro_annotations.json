@@ -1,0 +1,14 @@
+[
+  {
+    "timestamp": "00:02.000",
+    "frame": 70,
+    "emotion": "Confusion",
+    "confidence": 0.8215516805648804,
+    "all_scores": {
+      "Boredom": 0.14238177239894867,
+      "Confusion": 0.8215516805648804,
+      "Frustration": 0.06537575274705887,
+      "Engagement": 0.1589953750371933
+    }
+  }
+]

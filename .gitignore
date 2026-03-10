@@ -15,6 +15,10 @@ YMax30.npy
 .env/
 .env/
 venv/
+AppEnv/
+AppEnv_tf213/
+FYPenv310/
+FYPenv311/
 
 # Python
 __pycache__/
