@@ -10,8 +10,6 @@ to the shared SocketIO instance without circular imports.
 
 from flask import Flask
 from flask_socketio import SocketIO
-import os
-import requests
 
 from app.config import (
     SECRET_KEY,
@@ -20,29 +18,9 @@ from app.config import (
     PING_INTERVAL,
     MODEL_PATH,
     THRESHOLD_PATH,
-    MODEL_URL,
-    THRESHOLD_URL,
 )
 from app.models import SessionManager
 from app.ml.predictor import EmotionPredictor
-
-# ── Download model files from Hugging Face if not present locally ─────────────
-def _download(url: str, dest: str) -> None:
-    if not url:
-        return
-    if os.path.exists(dest):
-        print(f"[startup] {dest} already present, skipping download.")
-        return
-    print(f"[startup] Downloading {dest} from {url} ...")
-    resp = requests.get(url, stream=True, timeout=120)
-    resp.raise_for_status()
-    with open(dest, "wb") as f:
-        for chunk in resp.iter_content(chunk_size=8192):
-            f.write(chunk)
-    print(f"[startup] {dest} downloaded ({os.path.getsize(dest) // 1024 // 1024} MB).")
-
-_download(MODEL_URL, MODEL_PATH)
-_download(THRESHOLD_URL, THRESHOLD_PATH)
 
 # ── Shared instances (importable by other modules) ────────────────────────────
 flask_app = Flask(__name__, template_folder="../templates")
