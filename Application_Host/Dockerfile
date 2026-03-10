@@ -16,10 +16,6 @@ COPY templates/ templates/
 
 RUN chmod +x startup.sh
 
-# Pre-download ResNet50 weights during build so Keras doesn't fetch them
-# at runtime (where eventlet breaks DNS resolution).
-RUN python3 -c "from tensorflow.keras.applications import ResNet50; ResNet50(weights='imagenet', include_top=False); print('ResNet50 weights cached.')"
-
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
