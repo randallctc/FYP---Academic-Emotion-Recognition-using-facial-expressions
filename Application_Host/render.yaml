@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: classroom-emotion-monitor
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+
+    envVars:
+      - key: PORT
+        value: 5000
+
+      # Set these three in Render dashboard → Environment tab
+      # Do NOT put real values here — this file goes in your public GitHub repo
+      - key: MODEL_URL
+        sync: false
+      - key: THRESH_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+
+    healthCheckPath: /health
+    autoDeploy: true
