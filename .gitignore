@@ -24,6 +24,7 @@ __pycache__/
 *.h5
 *.npy
 *.npz
+*.keras
 
 # OS
 .DS_Store
